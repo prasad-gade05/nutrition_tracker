@@ -5,6 +5,8 @@ import {
   getStackedMacros,
   getNutrientTrend,
   getHeatmapData,
+  getMetricRanges,
+  getMetricColor,
 } from "../utils/trends";
 import { subDays, startOfDay, endOfDay, format } from "date-fns";
 import {
@@ -58,6 +60,8 @@ const TrendsDashboard = () => {
   );
   const [customEnd, setCustomEnd] = useState(format(today, "yyyy-MM-dd"));
   const [nutrient, setNutrient] = useState("calories");
+  const [selectedMetric, setSelectedMetric] = useState("calories");
+  const [selectedDate, setSelectedDate] = useState(null);
 
   // Calculate range
   let startDate, endDate;
@@ -77,7 +81,8 @@ const TrendsDashboard = () => {
   const macroAverages = getMacroAverages(startDate, endDate);
   const stackedMacros = getStackedMacros(startDate, endDate);
   const nutrientTrend = getNutrientTrend(startDate, endDate, nutrient);
-  const heatmapData = getHeatmapData();
+  const heatmapData = getHeatmapData(selectedMetric);
+  const metricRanges = getMetricRanges(selectedMetric);
 
   // Pie chart data
   const pieData = [
@@ -114,6 +119,34 @@ const TrendsDashboard = () => {
     if (count < 2000) return "#40916c";
     return "#1b4332";
   }
+
+  // Function to format the tooltip content for native title attribute
+  const formatTooltipString = (value) => {
+    if (!value || !value.details) return "";
+    const { details } = value;
+    const date = new Date(value.date).toLocaleDateString();
+    const metric =
+      selectedMetric.charAt(0).toUpperCase() + selectedMetric.slice(1);
+    const mealCount = details.meals.length;
+    const mealNames = details.meals
+      .slice(0, 2)
+      .map((m) => m.name)
+      .join(", ");
+    const moreMeals = mealCount > 2 ? ` and ${mealCount - 2} more...` : "";
+    let str = `${date}\nTotal ${metric}: ${Math.round(
+      value.count
+    )}\nMeals: ${mealCount}`;
+    if (mealCount > 0) {
+      str += `\n${mealNames}${moreMeals}`;
+    }
+    return str;
+  };
+
+  // Function to handle click on a day
+  const handleDayClick = (value) => {
+    if (!value || !value.details) return;
+    setSelectedDate(value);
+  };
 
   return (
     <div className="trends-dashboard">
@@ -268,38 +301,89 @@ const TrendsDashboard = () => {
         </ResponsiveContainer>
       </section>
 
-      {/* Calendar Heatmap */}
+      {/* Calendar Heatmap Section */}
       <section className="trends-section">
-        <h3>Calendar Heatmap (Past 6 Months)</h3>
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <CalendarHeatmap
-            startDate={heatmapData[0]?.date}
-            endDate={heatmapData[heatmapData.length - 1]?.date}
-            values={heatmapData}
-            classForValue={(value) => {
-              if (!value) return "color-empty";
-              return "color-github";
-            }}
-            showWeekdayLabels={true}
-            gutterSize={3}
-            style={{ width: "100%" }}
-            transformDayElement={(el, value) => {
-              const color = getHeatColor(value.count);
-              // Tooltip attributes
-              const tooltipAttrs =
-                value && value.date
-                  ? {
-                      "data-tooltip-id": "calendar-heatmap-tooltip",
-                      "data-tooltip-content": `${value.date}: ${value.count} kcal`,
-                      tabIndex: 0,
-                      style: { fill: color, cursor: "pointer" },
-                    }
-                  : { style: { fill: color } };
-              return React.cloneElement(el, tooltipAttrs);
-            }}
-          />
-          <Tooltip id="calendar-heatmap-tooltip" />
+        <h3>Activity Calendar</h3>
+
+        {/* Metric Selector */}
+        <div className="metric-selector">
+          <label>Show: </label>
+          <select
+            value={selectedMetric}
+            onChange={(e) => setSelectedMetric(e.target.value)}
+          >
+            <option value="calories">Calories</option>
+            <option value="protein">Protein</option>
+            <option value="carbs">Carbs</option>
+            <option value="fat">Fat</option>
+          </select>
         </div>
+
+        {/* Legend */}
+        <div className="heatmap-legend">
+          {metricRanges.map((range, index) => (
+            <div key={index} className="legend-item">
+              <div
+                className="legend-color"
+                style={{ backgroundColor: range.color }}
+              />
+              <span>{range.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Heatmap */}
+        <div className="heatmap-container">
+          <CalendarHeatmap
+            startDate={new Date(heatmapData[0].date)}
+            endDate={new Date(heatmapData[heatmapData.length - 1].date)}
+            values={heatmapData}
+            classForValue={() => ""}
+            transformDayElement={(el, value) => {
+              const color =
+                value && value.count > 0
+                  ? getMetricColor(value.count, selectedMetric)
+                  : "#ebedf0";
+              return React.cloneElement(el, {
+                style: {
+                  fill: color,
+                  cursor: value && value.count > 0 ? "pointer" : "default",
+                },
+              });
+            }}
+            titleForValue={formatTooltipString}
+            onClick={handleDayClick}
+          />
+        </div>
+
+        {/* Selected Day Details */}
+        {selectedDate && (
+          <div className="selected-day-details">
+            <h4>{new Date(selectedDate.date).toLocaleDateString()}</h4>
+            <div className="day-summary">
+              <div>
+                Total Calories: {Math.round(selectedDate.details.calories)}
+              </div>
+              <div>
+                Total Protein: {Math.round(selectedDate.details.protein)}g
+              </div>
+              <div>Total Carbs: {Math.round(selectedDate.details.carbs)}g</div>
+              <div>Total Fat: {Math.round(selectedDate.details.fat)}g</div>
+            </div>
+            <div className="meals-list">
+              <h5>Meals:</h5>
+              {selectedDate.details.meals.map((meal, index) => (
+                <div key={index} className="meal-item">
+                  <div className="meal-time">{meal.time}</div>
+                  <div className="meal-name">{meal.name}</div>
+                  <div className="meal-nutrients">
+                    {meal.calories}cal | {Math.round(meal.protein)}g protein
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Nutrient Deep Dive */}

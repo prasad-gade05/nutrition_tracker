@@ -130,24 +130,100 @@ export function getNutrientTrend(startDate, endDate, nutrientKey) {
 }
 
 // Get data for calendar heatmap (past 6 months)
-export function getHeatmapData() {
+export function getHeatmapData(metric = "calories") {
   const allMeals = getAllMeals();
   const today = startOfDay(new Date());
   const start = startOfDay(
     new Date(today.getFullYear(), today.getMonth() - 5, 1)
   );
   const days = eachDayOfInterval({ start, end: today });
+
+  // Initialize map with empty arrays for meals
   const map = {};
   days.forEach((day) => {
-    map[format(day, "yyyy-MM-dd")] = 0;
+    map[format(day, "yyyy-MM-dd")] = {
+      meals: [],
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+    };
   });
+
+  // Populate map with meal data
   allMeals.forEach((meal) => {
     const d = format(startOfDay(new Date(meal.timestamp)), "yyyy-MM-dd");
-    const n = meal.geminiAnalysis?.nutrition || {};
-    map[d] = (map[d] || 0) + (n.calories?.value || 0);
+    if (map[d]) {
+      const n = meal.geminiAnalysis?.nutrition || {};
+      map[d].meals.push({
+        name: meal.geminiAnalysis?.foodName || "Unknown",
+        time: format(new Date(meal.timestamp), "hh:mm a"),
+        calories: n.calories?.value || 0,
+        protein: n.protein?.value || 0,
+        carbs: n.carbs?.value || 0,
+        fat: n.fat?.value || 0,
+      });
+      map[d].calories += n.calories?.value || 0;
+      map[d].protein += n.protein?.value || 0;
+      map[d].carbs += n.carbs?.value || 0;
+      map[d].fat += n.fat?.value || 0;
+    }
   });
-  return days.map((day) => ({
-    date: format(day, "yyyy-MM-dd"),
-    count: map[format(day, "yyyy-MM-dd")] || 0,
-  }));
+
+  return days.map((day) => {
+    const dateStr = format(day, "yyyy-MM-dd");
+    const dayData = map[dateStr];
+    return {
+      date: dateStr,
+      count: dayData[metric] || 0,
+      details: dayData,
+    };
+  });
+}
+
+// Get color scale ranges for different metrics
+export function getMetricRanges(metric) {
+  switch (metric) {
+    case "calories":
+      return [
+        { min: 0, max: 500, color: "#ebedf0", label: "No meals" },
+        { min: 501, max: 1500, color: "#9be9a8", label: "Low" },
+        { min: 1501, max: 2500, color: "#40c463", label: "Moderate" },
+        { min: 2501, max: 3000, color: "#30a14e", label: "High" },
+        { min: 3001, max: Infinity, color: "#216e39", label: "Very High" },
+      ];
+    case "protein":
+      return [
+        { min: 0, max: 20, color: "#ebedf0", label: "No protein" },
+        { min: 21, max: 50, color: "#9be9a8", label: "Low" },
+        { min: 51, max: 100, color: "#40c463", label: "Moderate" },
+        { min: 101, max: 150, color: "#30a14e", label: "High" },
+        { min: 151, max: Infinity, color: "#216e39", label: "Very High" },
+      ];
+    case "carbs":
+      return [
+        { min: 0, max: 50, color: "#ebedf0", label: "No carbs" },
+        { min: 51, max: 150, color: "#9be9a8", label: "Low" },
+        { min: 151, max: 250, color: "#40c463", label: "Moderate" },
+        { min: 251, max: 350, color: "#30a14e", label: "High" },
+        { min: 351, max: Infinity, color: "#216e39", label: "Very High" },
+      ];
+    case "fat":
+      return [
+        { min: 0, max: 20, color: "#ebedf0", label: "No fat" },
+        { min: 21, max: 50, color: "#9be9a8", label: "Low" },
+        { min: 51, max: 80, color: "#40c463", label: "Moderate" },
+        { min: 81, max: 100, color: "#30a14e", label: "High" },
+        { min: 101, max: Infinity, color: "#216e39", label: "Very High" },
+      ];
+    default:
+      return [];
+  }
+}
+
+// Get color for a value based on metric ranges
+export function getMetricColor(value, metric) {
+  const ranges = getMetricRanges(metric);
+  const range = ranges.find((r) => value >= r.min && value <= r.max);
+  return range ? range.color : "#ebedf0";
 }

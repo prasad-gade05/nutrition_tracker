@@ -244,12 +244,6 @@ const Dashboard = ({ mealsUpdated }) => {
                 key={meal.id}
                 className="meal-card"
                 onClick={() => handleMealClick(meal.id)}
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "stretch",
-                  height: "180px",
-                }}
               >
                 <div
                   style={{
@@ -264,6 +258,13 @@ const Dashboard = ({ mealsUpdated }) => {
                   <div className="meal-name">
                     {meal.geminiAnalysis?.foodName || "Unknown Food"}
                   </div>
+                  <div
+                    className="meal-calories"
+                    style={{ fontSize: "1.3rem", marginTop: 0 }}
+                  >
+                    {meal.geminiAnalysis?.nutrition?.calories?.value || "N/A"}{" "}
+                    calories
+                  </div>
                   <div className="meal-macros">
                     P: {meal.geminiAnalysis?.nutrition?.protein?.value || "N/A"}
                     g &nbsp;C:{" "}
@@ -276,24 +277,6 @@ const Dashboard = ({ mealsUpdated }) => {
                       new Date(meal.timestamp),
                       "EEEE, MMMM d, yyyy hh:mm a"
                     )}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    minWidth: 120,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "flex-end",
-                    height: "100%",
-                  }}
-                >
-                  <div
-                    className="meal-calories"
-                    style={{ fontSize: "1.3rem", marginTop: 0 }}
-                  >
-                    {meal.geminiAnalysis?.nutrition?.calories?.value || "N/A"}{" "}
-                    calories
                   </div>
                 </div>
               </div>
