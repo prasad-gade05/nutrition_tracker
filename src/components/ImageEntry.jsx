@@ -1,6 +1,10 @@
 import React from "react";
 import { useState, useRef } from "react";
-import { getNutritionFromImage } from "../services/geminiService";
+import {
+  getNutritionFromImage,
+  getNutritionFromText,
+  getNutritionFromImageWithSuggestion,
+} from "../services/geminiService";
 import ReviewScreen from "./ReviewScreen";
 
 const ImageEntry = ({ onNutritionReceived, onMealSaved }) => {
@@ -11,6 +15,7 @@ const ImageEntry = ({ onNutritionReceived, onMealSaved }) => {
   const [nutritionData, setNutritionData] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const fileInputRef = useRef(null);
+  const [recheckLoading, setRecheckLoading] = useState(false);
 
   const resizeImage = (file) => {
     return new Promise((resolve) => {
@@ -84,6 +89,22 @@ const ImageEntry = ({ onNutritionReceived, onMealSaved }) => {
     }
   };
 
+  const handleRecheckWithSuggestion = async (suggestion) => {
+    setRecheckLoading(true);
+    try {
+      const data = await getNutritionFromImageWithSuggestion(
+        selectedImage,
+        suggestion
+      );
+      setNutritionData(data);
+      onNutritionReceived(data);
+    } catch (err) {
+      throw err;
+    } finally {
+      setRecheckLoading(false);
+    }
+  };
+
   const handleReviewConfirm = (savedMeal) => {
     setShowReview(false);
     setNutritionData(null);
@@ -132,6 +153,7 @@ const ImageEntry = ({ onNutritionReceived, onMealSaved }) => {
         }}
         onConfirm={handleReviewConfirm}
         onCancel={handleReviewCancel}
+        onRecheck={handleRecheckWithSuggestion}
       />
     );
   }

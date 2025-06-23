@@ -60,6 +60,11 @@ const MealDetail = ({ mealId, onClose, onMealDeleted }) => {
           <div className="meal-info">
             <div className="meal-header-info">
               <h3>{meal.geminiAnalysis?.foodName || "Unknown Food"}</h3>
+              {meal.geminiAnalysis?.quantity && (
+                <div className="meal-quantity">
+                  Quantity: {meal.geminiAnalysis.quantity}
+                </div>
+              )}
               <div className="meal-meta">
                 <span className="meal-type-badge">
                   {meal.type === "image"

@@ -8,11 +8,16 @@ const ReviewScreen = ({
   userInput,
   onConfirm,
   onCancel,
+  onRecheck,
 }) => {
   const [editedFoodName, setEditedFoodName] = useState(
     nutritionData?.foodName || ""
   );
   const [showFullDetails, setShowFullDetails] = useState(false);
+  const [showSuggestionInput, setShowSuggestionInput] = useState(false);
+  const [suggestion, setSuggestion] = useState("");
+  const [recheckLoading, setRecheckLoading] = useState(false);
+  const [recheckError, setRecheckError] = useState("");
 
   const handleConfirm = () => {
     const mealData = {
@@ -21,6 +26,7 @@ const ReviewScreen = ({
       geminiAnalysis: {
         ...nutritionData,
         foodName: editedFoodName,
+        quantity: nutritionData?.quantity || "",
       },
     };
 
@@ -28,7 +34,24 @@ const ReviewScreen = ({
     onConfirm(savedMeal);
   };
 
+  const handleRecheck = async () => {
+    if (!suggestion.trim()) return;
+    setRecheckLoading(true);
+    setRecheckError("");
+    try {
+      await onRecheck(suggestion);
+      setShowSuggestionInput(false);
+      setSuggestion("");
+    } catch (err) {
+      setRecheckError(err.message || "Failed to recheck. Try again.");
+    } finally {
+      setRecheckLoading(false);
+    }
+  };
+
   const nutrition = nutritionData?.nutrition || {};
+  const quantity = nutritionData?.quantity;
+  const items = nutritionData?.items || [];
 
   return (
     <div className="review-screen">
@@ -45,6 +68,28 @@ const ReviewScreen = ({
             className="food-name-input"
           />
         </div>
+
+        {/* Show Gemini's item breakdown if present */}
+        {items.length > 0 && (
+          <div className="items-breakdown-section">
+            <strong>Identified Items:</strong>
+            <ul>
+              {items.map((item, idx) => (
+                <li key={idx}>
+                  {item.quantity ? `${item.quantity} ` : ""}
+                  {item.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Show Gemini's quantity result, only for review */}
+        {quantity && (
+          <div className="quantity-section">
+            <strong>Estimated Quantity:</strong> {quantity}
+          </div>
+        )}
 
         <div className="nutrition-summary">
           <h3>Nutrition Summary</h3>
@@ -156,7 +201,51 @@ const ReviewScreen = ({
           <button type="button" onClick={handleConfirm} className="confirm-btn">
             Log Meal
           </button>
+          <button
+            type="button"
+            className="recheck-btn"
+            onClick={() => setShowSuggestionInput(true)}
+          >
+            Recheck with Suggestion
+          </button>
         </div>
+
+        {showSuggestionInput && (
+          <div className="suggestion-modal">
+            <div className="suggestion-content">
+              <h4>Suggest Quantity/Correction</h4>
+              <input
+                type="text"
+                value={suggestion}
+                onChange={(e) => setSuggestion(e.target.value)}
+                placeholder="e.g., There are 3 rotis and 1 bowl of dal"
+                disabled={recheckLoading}
+                className="suggestion-input"
+              />
+              {recheckError && (
+                <div className="error-message">{recheckError}</div>
+              )}
+              <div className="suggestion-actions">
+                <button
+                  type="button"
+                  onClick={() => setShowSuggestionInput(false)}
+                  className="cancel-btn"
+                  disabled={recheckLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRecheck}
+                  className="confirm-btn"
+                  disabled={recheckLoading || !suggestion.trim()}
+                >
+                  {recheckLoading ? "Rechecking..." : "Submit"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

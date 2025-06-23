@@ -2251,3 +2251,36 @@ button:disabled {
 [data-theme="dark"] .daily-goals-section h3 {
   color: var(--text-color-primary) !important;
 }
+
+/* Add after .review-actions styles */
+.suggestion-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+.suggestion-actions .cancel-btn,
+.suggestion-actions .confirm-btn {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Add after .suggestion-actions styles */
+.suggestion-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.suggestion-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}

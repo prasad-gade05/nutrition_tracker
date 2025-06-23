@@ -38,7 +38,16 @@ const MealList = () => {
         {meals.map((meal) => (
           <div key={meal.id} className="meal-item">
             <div className="meal-header">
-              <h3>{meal.geminiAnalysis?.foodName || "Unknown Food"}</h3>
+              <h3>
+                <div className="meal-name">
+                  {meal.geminiAnalysis?.foodName || "Unknown Food"}
+                </div>
+                {meal.geminiAnalysis?.quantity && (
+                  <div className="meal-quantity">
+                    Quantity: {meal.geminiAnalysis.quantity}
+                  </div>
+                )}
+              </h3>
               <span className="meal-time">
                 {format(new Date(meal.timestamp), "MMM dd, yyyy HH:mm")}
               </span>

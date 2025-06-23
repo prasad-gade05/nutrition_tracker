@@ -13,6 +13,9 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MO
 const NUTRITION_JSON_STRUCTURE = `
 {
   "foodName": "A descriptive name of the meal",
+  "items": [
+    { "name": "Name of food item", "quantity": "Estimated quantity (e.g., 3 pieces, 2 bowls)" }
+  ],
   "quantity": "The estimated total quantity or serving size",
   "nutrition": {
     "calories": { "value": Number, "unit": "kcal" },
@@ -88,6 +91,8 @@ Your response MUST be a single, valid JSON object and nothing else. Do not wrap 
 
 The JSON object must strictly follow this structure:
 ${NUTRITION_JSON_STRUCTURE}
+
+**Important:** The 'items' array must list each visible food item with its estimated quantity (e.g., 3 leg pieces, 2 breasts, 1 bowl of rice). This is for review only and should not affect the nutrition calculation.
 
 **Important:** If the image does not contain identifiable food, return this exact JSON object:
 { "error": "No identifiable food found in the image. Please use a clearer photo." }
@@ -165,6 +170,7 @@ const normalizeNutritionData = (data) => {
   let normalized = {
     foodName: data.foodName || "Unknown Food",
     quantity: data.quantity || "1 serving",
+    items: Array.isArray(data.items) ? data.items : [],
     nutrition: {
       calories: { value: 0, unit: "kcal" },
       protein: { value: 0, unit: "g" },
@@ -334,6 +340,58 @@ export const getNutritionFromImage = async (base64Image) => {
     return { ...nutritionData, rawResponse: responseText };
   } catch (error) {
     console.error("❌ Error in getNutritionFromImage:", error);
+    throw error;
+  }
+};
+
+/**
+ * Gets nutritional data from an image and a user suggestion using the Gemini API.
+ * The suggestion is used to correct or clarify the item breakdown.
+ */
+export const getNutritionFromImageWithSuggestion = async (
+  base64Image,
+  suggestion
+) => {
+  console.log("🚀 Starting image nutrition analysis with user suggestion");
+  const imageData = base64Image.split(",")[1];
+  if (!imageData) {
+    throw new Error("Invalid Base64 image format.");
+  }
+
+  // Compose a prompt that includes the suggestion
+  const SUGGESTION_PROMPT = `\nA user has provided the following correction or clarification about the food items in the image:\n"${suggestion}"\nPlease use this information to improve the breakdown of items and their quantities, and update the nutrition analysis accordingly.\n`;
+
+  try {
+    const response = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              { text: IMAGE_PROMPT_TEMPLATE + SUGGESTION_PROMPT },
+              { inline_data: { mime_type: "image/jpeg", data: imageData } },
+            ],
+          },
+        ],
+        generationConfig: { responseMimeType: "application/json" },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("❌ API request failed:", response.status, errorBody);
+      throw new Error(`API request failed: ${response.status} - ${errorBody}`);
+    }
+
+    const data = await response.json();
+    const responseText = data.candidates[0].content.parts[0].text;
+
+    const nutritionData = parseJsonFromText(responseText);
+
+    return { ...nutritionData, rawResponse: responseText };
+  } catch (error) {
+    console.error("❌ Error in getNutritionFromImageWithSuggestion:", error);
     throw error;
   }
 };

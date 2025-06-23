@@ -105,7 +105,11 @@ export function exportMealsToCSV() {
       format(date, "hh:mm a"),
       meal.type,
       `"${(meal.geminiAnalysis?.foodName || "").replace(/"/g, '""')}"`,
-      `"${(meal.userInput?.quantity || "").replace(/"/g, '""')}"`,
+      `"${(
+        meal.geminiAnalysis?.quantity ||
+        meal.userInput?.quantity ||
+        ""
+      ).replace(/"/g, '""')}"`,
       nutrition.calories?.value || "",
       nutrition.protein?.value || "",
       nutrition.carbs?.value || "",
