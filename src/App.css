@@ -11,15 +11,17 @@
 }
 
 [data-theme="dark"] {
-  --background-color: #1a1d21;
-  --surface-color: #2c2f33;
-  --text-color-primary: #eaecef;
-  --text-color-secondary: #99aab5;
-  --primary-color: #1abc9c;
-  --primary-accent: #27ae60;
-  --error-color: #e57373;
-  --border-color: #3a3d42;
+  --background-color: #121212;
+  --surface-color: #1e1e1e;
+  --text-color-primary: #e0e0e0;
+  --text-color-secondary: #a0a0a0;
+  --primary-color: #a3e635;
+  --primary-accent: #32cd32;
+  --secondary-accent: #8b5cf6;
+  --error-color: #f87171;
+  --border-color: rgba(255, 255, 255, 0.1);
   --shadow: 0px 4px 12px rgba(0, 0, 0, 0.32);
+  --hover-color: #2c2c2c;
 }
 
 body {
@@ -161,16 +163,17 @@ h3 {
 
 .dashboard-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   margin-bottom: 30px;
   flex-wrap: wrap;
   gap: 20px;
 }
 
 .dashboard-header h2 {
-  margin: 0;
-  color: var(--text-color-primary);
+  text-align: center;
+  width: 100%;
 }
 
 .date-navigation {
@@ -184,6 +187,9 @@ h3 {
   margin-top: 16px;
   flex-wrap: wrap;
   margin-bottom: 16px;
+  justify-content: center;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .nav-btn {
@@ -340,6 +346,7 @@ h3 {
 }
 [data-theme="dark"] .meal-card {
   background: var(--surface-color);
+  border-left: 3px solid var(--primary-color);
 }
 
 .meal-card:hover {
@@ -402,7 +409,7 @@ h3 {
 }
 
 [data-theme="dark"] .meal-detail-overlay {
-  background: rgba(26, 29, 33, 0.85);
+  background: rgba(18, 18, 18, 0.85);
 }
 
 .meal-detail {
@@ -1350,13 +1357,13 @@ button:disabled {
 }
 
 .import-feedback.success {
-  background: #27ae60;
-  color: white;
+  background: var(--primary-color);
+  color: var(--background-color);
 }
 
 .import-feedback.error {
-  background: #e74c3c;
-  color: white;
+  background: var(--error-color);
+  color: var(--text-color-primary);
 }
 
 @keyframes slidein {
@@ -1410,8 +1417,8 @@ button:disabled {
 }
 
 .heatmap-tooltip {
-  background: white;
-  border: 1px solid #ccc;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 14px;
@@ -1427,7 +1434,7 @@ button:disabled {
   max-width: 600px;
   margin: 20px auto;
   padding: 20px;
-  background: white;
+  background: var(--surface-color);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -1443,7 +1450,7 @@ button:disabled {
   gap: 10px;
   margin-bottom: 20px;
   padding: 15px;
-  background: #f8f9fa;
+  background: var(--hover-color);
   border-radius: 6px;
 }
 
@@ -1462,7 +1469,7 @@ button:disabled {
   gap: 15px;
   align-items: center;
   padding: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .meal-time {
@@ -1692,10 +1699,10 @@ button:disabled {
   grid-template-columns: 90px 1fr 54px 220px;
   align-items: center;
   gap: 10px;
-  background: #f8f9fa;
+  background: var(--surface-color);
   border-radius: 10px;
   padding: 10px 18px;
-  border: 1px solid #eaecef;
+  border: 1px solid var(--border-color);
   margin-bottom: 10px;
   box-shadow: 0 1px 3px rgba(44, 62, 80, 0.03);
   width: 100%;
@@ -1811,9 +1818,9 @@ button:disabled {
   box-sizing: border-box;
 }
 .goal-card {
-  background: #f8f9fa;
+  background: var(--surface-color);
   border-radius: 10px;
-  border: 1px solid #eaecef;
+  border: 1px solid var(--border-color);
   box-shadow: 0 1px 3px rgba(44, 62, 80, 0.03);
   padding: 14px 16px 12px 16px;
   min-width: 0;
@@ -1939,13 +1946,13 @@ button:disabled {
 }
 .accordion-group {
   border-radius: 10px;
-  background: #f8f9fa;
-  border: 1px solid #eaecef;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   box-shadow: 0 1px 3px rgba(44, 62, 80, 0.03);
   padding: 8px 0;
 }
 .accordion-item + .accordion-item {
-  border-top: 1px solid #eaecef;
+  border-top: 1px solid var(--border-color);
 }
 .accordion-toggle {
   width: 100%;
@@ -1954,7 +1961,7 @@ button:disabled {
   outline: none;
   font-size: 1.08rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-color-primary);
   padding: 14px 18px;
   text-align: left;
   cursor: pointer;
@@ -1964,11 +1971,11 @@ button:disabled {
   transition: background 0.2s;
 }
 .accordion-toggle:hover {
-  background: #eaf6fb;
+  background: var(--hover-color);
 }
 .accordion-content {
   padding: 0 18px 16px 18px;
-  background: #f8f9fa;
+  background: var(--surface-color);
   border-radius: 0 0 10px 10px;
 }
 .advanced-goals-row {
@@ -1995,8 +2002,8 @@ button:disabled {
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: #27ae60;
-  color: #fff;
+  background: var(--primary-color);
+  color: var(--background-color);
   padding: 12px 28px;
   border-radius: 8px;
   font-size: 1.08rem;
@@ -2016,8 +2023,8 @@ button:disabled {
   }
 }
 .goals-empty-state {
-  background: #eaf6fb;
-  color: #2980b9;
+  background: var(--surface-color);
+  color: var(--primary-color);
   border-radius: 8px;
   padding: 14px 18px;
   margin-bottom: 18px;
@@ -2054,9 +2061,8 @@ button:disabled {
 [data-theme="dark"] .macro-slider-row,
 [data-theme="dark"] .goal-card,
 [data-theme="dark"] .accordion-group {
-  background: #23272e;
+  background: var(--surface-color);
   border-color: var(--border-color);
-  color: var(--text-color-primary);
 }
 [data-theme="dark"] .macro-slider-row label,
 [data-theme="dark"] .goal-card-header,
@@ -2076,7 +2082,7 @@ button:disabled {
   color: var(--text-color-primary);
 }
 [data-theme="dark"] .goal-card-input {
-  background: #23272e;
+  background: var(--surface-color);
   color: var(--text-color-primary);
   border-color: var(--border-color);
 }
@@ -2085,55 +2091,163 @@ button:disabled {
   color: #888;
 }
 [data-theme="dark"] .goal-tooltip {
-  background: #23272e;
-  color: #1abc9c;
+  background: var(--surface-color);
+  color: var(--text-color-primary);
 }
 [data-theme="dark"] .goal-tooltip:hover {
-  background: #29394d;
+  background: var(--hover-color);
 }
 [data-theme="dark"] .accordion-toggle {
   color: var(--text-color-primary);
-  background: #23272e;
+  background: var(--surface-color);
 }
 [data-theme="dark"] .accordion-toggle:hover {
-  background: #29394d;
+  background: var(--hover-color);
 }
 [data-theme="dark"] .goals-empty-state {
-  background: #23272e;
-  color: #1abc9c;
+  background: var(--surface-color);
+  color: var(--primary-color);
 }
 [data-theme="dark"] .save-goals-btn {
-  background: #1abc9c;
-  color: #fff;
+  background: var(--primary-color);
+  color: var(--background-color);
 }
 [data-theme="dark"] .save-goals-btn:hover {
-  background: #27ae60;
+  background: var(--primary-accent);
 }
 [data-theme="dark"] .goals-toast {
-  background: #1abc9c;
-  color: #fff;
+  background: var(--primary-color);
+  color: var(--background-color);
 }
 [data-theme="dark"] .accordion-content {
-  background: #23272e;
+  background: var(--surface-color);
   border-radius: 0 0 10px 10px;
 }
 [data-theme="dark"] .goal-card {
-  background: #23272e;
-  border-color: #333a44;
+  background: var(--surface-color);
+  border-color: var(--border-color);
   color: var(--text-color-primary);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
 }
 [data-theme="dark"] .goal-card.enabled {
-  border-color: #1abc9c;
-  box-shadow: 0 2px 8px rgba(26, 188, 156, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(163, 230, 53, 0.1);
 }
 [data-theme="dark"] .goal-card-input {
-  background: #181b20;
+  background: var(--surface-color);
   color: var(--text-color-primary);
-  border-color: #333a44;
+  border-color: var(--border-color);
 }
 [data-theme="dark"] .goal-card-input:disabled {
   background: #181b20;
   color: #888;
-  border-color: #23272e;
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .meal-calories {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .meal-type-badge {
+  background: #3730a3;
+  color: var(--secondary-accent);
+}
+
+[data-theme="dark"] .delete-btn {
+  background: var(--error-color);
+}
+
+[data-theme="dark"] .delete-btn:hover {
+  background: #ef4444;
+}
+
+[data-theme="dark"] .nav-link.active,
+[data-theme="dark"] .nav-link:hover {
+  background: var(--primary-color);
+  color: var(--background-color);
+}
+
+[data-theme="dark"] .summary-value {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .nutrient-value {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .theme-switcher.dark .switch-thumb {
+  background: var(--primary-color);
+}
+
+[data-theme="dark"] .download-btn {
+  background: var(--primary-color);
+  color: var(--background-color);
+}
+
+[data-theme="dark"] .download-btn:hover {
+  background: var(--primary-accent);
+}
+
+[data-theme="dark"] .goal-card.enabled {
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(163, 230, 53, 0.1);
+}
+
+[data-theme="dark"] .goal-toggle input:checked + .slider {
+  background: var(--primary-color);
+}
+
+[data-theme="dark"] .goal-tooltip {
+  color: var(--secondary-accent);
+}
+
+[data-theme="dark"] .progress-bar-fill {
+  background: var(--primary-color);
+}
+
+[data-theme="dark"] .save-goals-btn {
+  background: var(--primary-color);
+  color: var(--background-color);
+}
+
+[data-theme="dark"] .save-goals-btn:hover {
+  background: var(--primary-accent);
+}
+
+/* Calendar heatmap custom colors for dark theme */
+[data-theme="dark"] .react-calendar-heatmap .color-empty {
+  fill: var(--surface-color);
+}
+
+[data-theme="dark"] .react-calendar-heatmap .color-github-1 {
+  fill: #4ade80;
+}
+
+[data-theme="dark"] .react-calendar-heatmap .color-github-2 {
+  fill: #22c55e;
+}
+
+[data-theme="dark"] .react-calendar-heatmap .color-github-3 {
+  fill: #16a34a;
+}
+
+[data-theme="dark"] .react-calendar-heatmap .color-github-4 {
+  fill: #15803d;
+}
+
+/* Update donut chart colors for dark theme */
+[data-theme="dark"] .macro-donut-protein {
+  fill: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .macro-donut-carbs {
+  fill: var(--secondary-accent) !important;
+}
+
+[data-theme="dark"] .macro-donut-fat {
+  fill: #f59e0b !important;
+}
+
+[data-theme="dark"] .daily-goals-section h3 {
+  color: var(--text-color-primary) !important;
 }
