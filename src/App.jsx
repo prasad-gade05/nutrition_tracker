@@ -1,6 +1,6 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import { FaSun, FaMoon } from "react-icons/fa";
 import ManualEntryForm from "./components/ManualEntryForm";
 import ImageEntry from "./components/ImageEntry";
 import Dashboard from "./components/Dashboard";
@@ -11,6 +11,18 @@ function App() {
   const [nutritionData, setNutritionData] = useState(null);
   const [mealsUpdated, setMealsUpdated] = useState(0);
   const [activeTab, setActiveTab] = useState("image");
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("nutrisnap_theme") || "light"
+  );
+
+  useEffect(() => {
+    document.body.setAttribute("data-theme", theme);
+    localStorage.setItem("nutrisnap_theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
 
   const handleNutritionReceived = (data) => {
     setNutritionData(data);
@@ -24,9 +36,24 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        <header className="App-header">
+        <header className="App-header" style={{ position: "relative" }}>
           <h1>NutriSnap</h1>
           <p>AI-Powered Meal Journal</p>
+          <button
+            className={`theme-switcher${theme === "dark" ? " dark" : ""}`}
+            onClick={toggleTheme}
+            aria-label={
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
+            type="button"
+          >
+            <span className="switch-track">
+              <span className="switch-thumb" />
+            </span>
+            <span className="switch-label">
+              {theme === "dark" ? "Dark" : "Light"}
+            </span>
+          </button>
         </header>
 
         <nav className="main-nav">

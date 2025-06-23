@@ -1,9 +1,14 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { getMealsByDate, getAllMeals } from "../utils/storage";
+import { useState, useEffect, useRef } from "react";
+import {
+  getMealsByDate,
+  getAllMeals,
+  downloadMealsCSV,
+  importMealsFromCSV,
+} from "../utils/storage";
 import { format, addDays, subDays, startOfDay } from "date-fns";
 import MealDetail from "./MealDetail";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaDownload, FaUpload } from "react-icons/fa";
 
 const Dashboard = ({ mealsUpdated }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -15,10 +20,21 @@ const Dashboard = ({ mealsUpdated }) => {
     fat: 0,
   });
   const [selectedMealId, setSelectedMealId] = useState(null);
+  const [importFeedback, setImportFeedback] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     loadMealsForDate();
   }, [selectedDate, mealsUpdated]);
+
+  // Add storage event listener
+  useEffect(() => {
+    const handleStorageChange = () => {
+      loadMealsForDate();
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const loadMealsForDate = () => {
     const dateMeals = getMealsByDate(selectedDate);
@@ -79,16 +95,83 @@ const Dashboard = ({ mealsUpdated }) => {
     loadMealsForDate();
   };
 
+  const handleImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const result = importMealsFromCSV(e.target.result);
+        if (result.success) {
+          setImportFeedback({
+            type: "success",
+            message: `Successfully imported ${result.imported} meals. Total meals: ${result.total}`,
+          });
+          loadMealsForDate(); // Refresh the current view
+        } else {
+          setImportFeedback({
+            type: "error",
+            message: result.error,
+          });
+        }
+      } catch (error) {
+        setImportFeedback({
+          type: "error",
+          message: "Failed to import CSV. Please check the file format.",
+        });
+      }
+      // Clear the file input
+      event.target.value = "";
+    };
+    reader.readAsText(file);
+  };
+
+  // Clear feedback after 5 seconds
+  useEffect(() => {
+    if (importFeedback) {
+      const timer = setTimeout(() => {
+        setImportFeedback(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [importFeedback]);
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
         <h2>Your Nutrition Dashboard</h2>
         <div className="date-navigation">
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleImport}
+            ref={fileInputRef}
+            style={{ display: "none" }}
+          />
+          <button
+            onClick={() => fileInputRef.current.click()}
+            className="import-btn"
+            title="Import meals from CSV"
+          >
+            <FaUpload /> Import Data
+          </button>
+          <button
+            onClick={downloadMealsCSV}
+            className="download-btn"
+            title="Download all meal data as CSV"
+          >
+            <FaDownload /> Export Data
+          </button>
+          {importFeedback && (
+            <div className={`import-feedback ${importFeedback.type}`}>
+              {importFeedback.message}
+            </div>
+          )}
           <span
             style={{
               display: "flex",
               alignItems: "center",
-              background: "#fff",
               borderRadius: 8,
               padding: "6px 16px",
               boxShadow: "0 2px 8px rgba(44,62,80,0.04)",
@@ -148,16 +231,7 @@ const Dashboard = ({ mealsUpdated }) => {
       </div>
 
       <div className="meals-section">
-        <h3
-          style={{
-            fontSize: "1.1rem",
-            fontWeight: 600,
-            color: "#596A7A",
-            marginBottom: 12,
-          }}
-        >
-          Meals ({meals.length})
-        </h3>
+        <h3>Meals ({meals.length})</h3>
         {meals.length === 0 ? (
           <div className="no-meals">
             <p>No meals logged for this date.</p>

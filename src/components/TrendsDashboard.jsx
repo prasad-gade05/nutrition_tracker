@@ -161,23 +161,52 @@ const TrendsDashboard = () => {
 
       {/* Calorie Trend Line Chart */}
       <section className="trends-section">
-        <h3>Calorie Trend</h3>
+        <h3>Calorie & Protein Trend</h3>
         <ResponsiveContainer width="100%" height={250}>
           <LineChart
             data={dailyTotals}
-            margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
+            margin={{ left: 10, right: 30, top: 10, bottom: 10 }}
           >
             <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
+            <YAxis
+              yAxisId="calories"
+              tick={{ fontSize: 12 }}
+              domain={[0, 3000]}
+              label={{ value: "Calories", angle: -90, position: "insideLeft" }}
+            />
+            <YAxis
+              yAxisId="protein"
+              orientation="right"
+              tick={{ fontSize: 12 }}
+              domain={[0, 100]}
+              label={{
+                value: "Protein (g)",
+                angle: 90,
+                position: "insideRight",
+              }}
+            />
             <Tooltip />
             <CartesianGrid strokeDasharray="3 3" />
             <Line
               type="monotone"
               dataKey="calories"
+              yAxisId="calories"
               stroke="#27ae60"
-              strokeWidth={3}
-              dot={true}
+              strokeWidth={2.5}
+              dot={{ r: 4 }}
+              name="Calories"
             />
+            <Line
+              type="monotone"
+              dataKey="protein"
+              yAxisId="protein"
+              stroke="#2980b9"
+              strokeWidth={2.5}
+              dot={{ r: 4 }}
+              name="Protein (g)"
+              strokeDasharray="5 5"
+            />
+            <Legend />
           </LineChart>
         </ResponsiveContainer>
       </section>
