@@ -863,3 +863,95 @@ button:disabled {
 .calendar-input:focus {
   border-color: #27ae60;
 }
+
+.main-nav {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  background: #f8f9fa;
+  padding: 12px 0 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 24px;
+}
+
+.nav-link {
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 6px 18px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-link.active,
+.nav-link:hover {
+  background: #27ae60;
+  color: #fff;
+}
+
+.trends-dashboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 0 40px 0;
+}
+
+.trends-range-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.trends-range-selector button {
+  background: #f8f9fa;
+  border: 1px solid #d1d5db;
+  color: #2c3e50;
+  font-size: 1rem;
+  padding: 7px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.trends-range-selector button.active,
+.trends-range-selector button:hover {
+  background: #27ae60;
+  color: #fff;
+  border-color: #27ae60;
+}
+
+.trends-section {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+  margin-bottom: 32px;
+  padding: 18px 18px 8px 18px;
+}
+
+.trends-section h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  margin-bottom: 18px;
+}
+
+.trends-section select {
+  font-size: 1rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #f8f9fa;
+  color: #2c3e50;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.trends-section select:focus {
+  border-color: #27ae60;
+}
+
+/* Calendar heatmap custom colors */
+.react-calendar-heatmap .color-empty {
+  fill: #eee;
+}
+.react-calendar-heatmap .color-github {
+  fill: #b7e4c7;
+}

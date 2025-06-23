@@ -1,8 +1,10 @@
 import React from "react";
 import { useState } from "react";
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import ManualEntryForm from "./components/ManualEntryForm";
 import ImageEntry from "./components/ImageEntry";
 import Dashboard from "./components/Dashboard";
+import TrendsDashboard from "./components/TrendsDashboard";
 import "./App.css";
 
 function App() {
@@ -20,50 +22,86 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>NutriSnap</h1>
-        <p>AI-Powered Meal Journal</p>
-      </header>
+    <BrowserRouter>
+      <div className="App">
+        <header className="App-header">
+          <h1>NutriSnap</h1>
+          <p>AI-Powered Meal Journal</p>
+        </header>
 
-      <main>
-        <div className="entry-tabs">
-          <button
-            className={`tab-button ${activeTab === "manual" ? "active" : ""}`}
-            onClick={() => setActiveTab("manual")}
+        <nav className="main-nav">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
           >
-            ✏️ Manual Entry
-          </button>
-          <button
-            className={`tab-button ${activeTab === "image" ? "active" : ""}`}
-            onClick={() => setActiveTab("image")}
+            Dashboard
+          </NavLink>
+          <NavLink
+            to="/trends"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
           >
-            📷 Snap a Meal
-          </button>
-        </div>
+            Trends
+          </NavLink>
+        </nav>
 
-        {activeTab === "manual" ? (
-          <ManualEntryForm
-            onNutritionReceived={handleNutritionReceived}
-            onMealSaved={handleMealSaved}
-          />
-        ) : (
-          <ImageEntry
-            onNutritionReceived={handleNutritionReceived}
-            onMealSaved={handleMealSaved}
-          />
-        )}
+        <main>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <div className="entry-tabs">
+                    <button
+                      className={`tab-button ${
+                        activeTab === "manual" ? "active" : ""
+                      }`}
+                      onClick={() => setActiveTab("manual")}
+                    >
+                      ✏️ Manual Entry
+                    </button>
+                    <button
+                      className={`tab-button ${
+                        activeTab === "image" ? "active" : ""
+                      }`}
+                      onClick={() => setActiveTab("image")}
+                    >
+                      📷 Snap a Meal
+                    </button>
+                  </div>
 
-        {nutritionData && (
-          <div className="nutrition-results">
-            <h3>Nutrition Results:</h3>
-            <pre>{JSON.stringify(nutritionData, null, 2)}</pre>
-          </div>
-        )}
+                  {activeTab === "manual" ? (
+                    <ManualEntryForm
+                      onNutritionReceived={handleNutritionReceived}
+                      onMealSaved={handleMealSaved}
+                    />
+                  ) : (
+                    <ImageEntry
+                      onNutritionReceived={handleNutritionReceived}
+                      onMealSaved={handleMealSaved}
+                    />
+                  )}
 
-        <Dashboard mealsUpdated={mealsUpdated} />
-      </main>
-    </div>
+                  <Dashboard mealsUpdated={mealsUpdated} />
+
+                  {nutritionData && (
+                    <div className="nutrition-results">
+                      <h3>Nutrition Results:</h3>
+                      <pre>{JSON.stringify(nutritionData, null, 2)}</pre>
+                    </div>
+                  )}
+                </>
+              }
+            />
+            <Route path="/trends" element={<TrendsDashboard />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 
