@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { format, parse } from "date-fns";
 
 const STORAGE_KEY = "nutrisnap_meals";
+const GOALS_KEY = "nutrisnap_daily_goals";
 
 export const getAllMeals = () => {
   try {
@@ -290,4 +291,17 @@ export function importMealsFromCSV(csvContent) {
       error: error.message,
     };
   }
+}
+
+export function getDailyGoals() {
+  try {
+    const data = localStorage.getItem(GOALS_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function setDailyGoals(goals) {
+  localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
 }
