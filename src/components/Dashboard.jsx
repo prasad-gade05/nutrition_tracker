@@ -143,7 +143,10 @@ const Dashboard = ({ mealsUpdated }) => {
                 <div className="meal-card-header">
                   <span className="meal-icon">{getMealIcon(meal.type)}</span>
                   <span className="meal-time">
-                    {format(new Date(meal.timestamp), "HH:mm")}
+                    {format(
+                      new Date(meal.timestamp),
+                      "EEEE, MMMM d, yyyy hh:mm a"
+                    )}
                   </span>
                 </div>
 

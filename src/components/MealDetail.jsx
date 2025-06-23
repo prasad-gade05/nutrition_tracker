@@ -69,7 +69,7 @@ const MealDetail = ({ mealId, onClose, onMealDeleted }) => {
                 <span className="meal-time">
                   {format(
                     new Date(meal.timestamp),
-                    "EEEE, MMMM d, yyyy at HH:mm"
+                    "EEEE, MMMM d, yyyy hh:mm a"
                   )}
                 </span>
               </div>
