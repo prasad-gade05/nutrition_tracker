@@ -84,20 +84,13 @@ const Dashboard = ({ mealsUpdated }) => {
         <h2>Your Nutrition Dashboard</h2>
 
         <div className="date-navigation">
-          <button onClick={() => navigateDate("prev")} className="nav-btn">
-            ←
-          </button>
-
-          <div className="current-date">
-            {format(selectedDate, "EEEE, MMMM d, yyyy")}
-            {isToday(selectedDate) && (
-              <span className="today-badge">Today</span>
-            )}
-          </div>
-
-          <button onClick={() => navigateDate("next")} className="nav-btn">
-            →
-          </button>
+          <input
+            type="date"
+            className="calendar-input"
+            value={format(selectedDate, "yyyy-MM-dd")}
+            onChange={(e) => setSelectedDate(new Date(e.target.value))}
+            max={format(new Date(), "yyyy-MM-dd")}
+          />
         </div>
       </div>
 

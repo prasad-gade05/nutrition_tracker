@@ -8,7 +8,7 @@ import "./App.css";
 function App() {
   const [nutritionData, setNutritionData] = useState(null);
   const [mealsUpdated, setMealsUpdated] = useState(0);
-  const [activeTab, setActiveTab] = useState("manual");
+  const [activeTab, setActiveTab] = useState("image");
 
   const handleNutritionReceived = (data) => {
     setNutritionData(data);
