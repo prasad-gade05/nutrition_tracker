@@ -1431,61 +1431,127 @@ button:disabled {
 }
 
 .selected-day-details {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  background: var(--surface-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 480px;
+  margin: 18px auto;
+  padding: 12px 10px 16px 10px;
+  background: #f8fafc;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+  border: 1px solid #e0e6ed;
+  font-family: "Inter", Arial, sans-serif;
 }
-
 .selected-day-details h4 {
-  margin: 0 0 15px;
-  color: #2c3e50;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #222;
 }
-
-.day-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: var(--hover-color);
-  border-radius: 6px;
+.selected-day-details .day-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-bottom: 12px;
+  background: #f1f5f9;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 0.97rem;
+  justify-content: space-between;
+  border: 1px solid #e0e6ed;
 }
-
-.meals-list {
-  margin-top: 20px;
-}
-
-.meals-list h5 {
-  margin: 0 0 15px;
-  color: #2c3e50;
-}
-
-.meal-item {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 15px;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.meal-time {
-  color: #666;
-  font-size: 0.9em;
-  white-space: nowrap;
-}
-
-.meal-name {
+.selected-day-details .day-summary div {
+  min-width: 120px;
+  font-size: 0.97rem;
   font-weight: 500;
+  color: #333;
+  margin-bottom: 0;
 }
-
-.meal-nutrients {
+.selected-day-details .meals-list {
+  margin-top: 10px;
+}
+.selected-day-details .meals-list h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #2c3e50;
+}
+.selected-day-details .meal-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid #e0e6ed;
+  font-size: 0.96rem;
+}
+.selected-day-details .meal-time {
   color: #666;
-  font-size: 0.9em;
+  font-size: 0.95em;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+.selected-day-details .meal-name {
+  font-weight: 500;
+  font-size: 0.96rem;
+  flex: 1 1 120px;
+  word-break: break-word;
+  color: #222;
+}
+.selected-day-details .meal-nutrients {
+  color: #666;
+  font-size: 0.95em;
   text-align: right;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+@media (max-width: 700px) {
+  .selected-day-details {
+    max-width: 98vw;
+    padding: 7px 2vw 12px 2vw;
+  }
+  .selected-day-details .day-summary {
+    flex-direction: column;
+    gap: 6px 0;
+    padding: 6px 6px;
+    font-size: 0.95rem;
+  }
+  .selected-day-details .day-summary div {
+    font-size: 0.95rem;
+  }
+  .selected-day-details .meal-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 6px 0;
+    font-size: 0.95rem;
+  }
+  .selected-day-details .meal-name {
+    font-size: 0.95rem;
+  }
+  .selected-day-details .meal-nutrients {
+    font-size: 0.93em;
+    min-width: 0;
+    text-align: left;
+  }
+}
+@media (max-width: 480px) {
+  .selected-day-details {
+    padding: 4px 1vw 8px 1vw;
+    font-size: 0.93rem;
+  }
+  .selected-day-details .day-summary {
+    font-size: 0.93rem;
+    padding: 4px 4px;
+  }
+  .selected-day-details .day-summary div {
+    font-size: 0.93rem;
+  }
+  .selected-day-details .meal-item {
+    font-size: 0.93rem;
+    padding: 4px 0;
+  }
+  .selected-day-details .meal-name {
+    font-size: 0.93rem;
+  }
 }
 
 /* GitHub-style color scale */
@@ -2283,4 +2349,175 @@ button:disabled {
 .suggestion-input:focus {
   outline: none;
   border-color: var(--primary-color);
+}
+
+/* Responsive styles for Activity Calendar meal list */
+.selected-day-details {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: var(--surface-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+}
+.meals-list {
+  margin-top: 20px;
+}
+.meals-list h5 {
+  margin: 0 0 15px;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+.meal-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 15px;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 1rem;
+}
+.meal-time {
+  color: #666;
+  font-size: 0.95em;
+  white-space: nowrap;
+}
+.meal-name {
+  font-weight: 500;
+  font-size: 1rem;
+  word-break: break-word;
+}
+.meal-nutrients {
+  color: #666;
+  font-size: 0.95em;
+  text-align: right;
+}
+@media (max-width: 700px) {
+  .selected-day-details {
+    padding: 10px;
+    font-size: 0.97rem;
+  }
+  .meals-list h5 {
+    font-size: 1rem;
+  }
+  .meal-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 8px 4px;
+    font-size: 0.97rem;
+  }
+  .meal-time,
+  .meal-nutrients {
+    font-size: 0.92em;
+    text-align: left;
+  }
+  .meal-name {
+    font-size: 0.97rem;
+  }
+}
+@media (max-width: 480px) {
+  .selected-day-details {
+    padding: 6px;
+    font-size: 0.93rem;
+  }
+  .meals-list h5 {
+    font-size: 0.95rem;
+  }
+  .meal-item {
+    padding: 6px 2px;
+    font-size: 0.93rem;
+  }
+  .meal-name {
+    font-size: 0.93rem;
+  }
+}
+
+/* Refined: Make summary and meal list text match .meal-time size */
+.selected-day-details .day-summary,
+.selected-day-details .day-summary div,
+.selected-day-details .meals-list h5,
+.selected-day-details .meal-item,
+.selected-day-details .meal-name,
+.selected-day-details .meal-nutrients {
+  font-size: 0.92rem !important;
+  font-weight: normal !important;
+  line-height: 1.3;
+}
+.selected-day-details .day-summary {
+  padding: 12px;
+  gap: 10px;
+  background: var(--hover-color);
+  border-radius: 6px;
+  font-family: "Inter", Arial, sans-serif;
+  color: var(--text-color-primary);
+}
+.selected-day-details .meals-list {
+  margin-top: 18px;
+}
+.selected-day-details .meals-list h5 {
+  margin-bottom: 10px;
+}
+.selected-day-details .meal-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.selected-day-details .meal-time {
+  color: #666;
+  font-size: 0.97em;
+  white-space: nowrap;
+}
+.selected-day-details .meal-name {
+  word-break: break-word;
+}
+.selected-day-details .meal-nutrients {
+  color: #666;
+  text-align: right;
+}
+@media (max-width: 700px) {
+  .selected-day-details .day-summary,
+  .selected-day-details .day-summary div,
+  .selected-day-details .meals-list h5,
+  .selected-day-details .meal-item,
+  .selected-day-details .meal-name,
+  .selected-day-details .meal-nutrients {
+    font-size: 0.93em;
+  }
+  .selected-day-details .day-summary {
+    padding: 8px;
+    gap: 6px;
+  }
+  .selected-day-details .meal-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 6px 0;
+  }
+  .selected-day-details .meal-time,
+  .selected-day-details .meal-nutrients {
+    text-align: left;
+  }
+}
+@media (max-width: 480px) {
+  .selected-day-details .day-summary,
+  .selected-day-details .day-summary div,
+  .selected-day-details .meals-list h5,
+  .selected-day-details .meal-item,
+  .selected-day-details .meal-name,
+  .selected-day-details .meal-nutrients {
+    font-size: 0.91em;
+  }
+  .selected-day-details .day-summary {
+    padding: 4px;
+    gap: 4px;
+  }
+  .selected-day-details .meal-item {
+    padding: 4px 0;
+  }
+  .selected-day-details .meal-name {
+    font-size: 0.93rem;
+  }
 }
