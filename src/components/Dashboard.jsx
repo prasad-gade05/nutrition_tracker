@@ -463,14 +463,14 @@ const Dashboard = ({ mealsUpdated }) => {
             className="import-btn"
             title="Import meals from CSV"
           >
-            <FaUpload /> Import Data
+            <FaUpload /> Upload Data
           </button>
           <button
             onClick={downloadMealsCSV}
             className="download-btn"
             title="Download all meal data as CSV"
           >
-            <FaDownload /> Export Data
+            <FaDownload /> Download Data
           </button>
           {importFeedback && (
             <div className={`import-feedback ${importFeedback.type}`}>
