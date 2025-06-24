@@ -204,7 +204,7 @@ export function parseCSVData(csvContent) {
       const timeStr = values[2].replace(".", ":"); // Convert decimal point to colon
       const parsedDate = parse(
         `${dateStr} ${timeStr}`,
-        "dd-MM-yyyy hh:mm a",
+        "yyyy-MM-dd hh:mm a",
         new Date()
       );
       if (isNaN(parsedDate.getTime())) {
