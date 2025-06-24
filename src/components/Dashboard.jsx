@@ -549,7 +549,7 @@ const Dashboard = ({ mealsUpdated }) => {
           <div className="header-right">
             <div className="daily-summary">
               <h3>
-                Daily Summary for {format(selectedDate, "MMMM d, yyyy")}
+                {format(selectedDate, "MMMM d, yyyy")}
                 {isToday(selectedDate) && " (Today)"}
               </h3>
               <div className="summary-grid">
