@@ -307,5 +307,13 @@ export function getDailyGoals() {
 }
 
 export function setDailyGoals(goals) {
-  localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+  const existingGoals = getDailyGoals();
+  const updatedGoals = { ...existingGoals, ...goals };
+  localStorage.setItem(GOALS_KEY, JSON.stringify(updatedGoals));
+}
+
+export function removeDailyGoal(goalKey) {
+  const existingGoals = getDailyGoals();
+  delete existingGoals[goalKey];
+  localStorage.setItem(GOALS_KEY, JSON.stringify(existingGoals));
 }

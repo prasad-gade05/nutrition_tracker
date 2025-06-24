@@ -7,6 +7,7 @@ import {
   importMealsFromCSV,
   getDailyGoals,
   setDailyGoals,
+  removeDailyGoal,
 } from "../utils/storage";
 import { format, addDays, subDays, startOfDay } from "date-fns";
 import MealDetail from "./MealDetail";
@@ -160,7 +161,7 @@ const Dashboard = ({ mealsUpdated }) => {
   const fileInputRef = useRef(null);
   const [goals, setGoals] = useState(getDailyGoals());
   const [goalInputs, setGoalInputs] = useState(goals);
-  const [calorieGoal, setCalorieGoal] = useState(goals.calories || 2000);
+  const [calorieGoal, setCalorieGoal] = useState(goals.calories || "");
   const [macroPercents, setMacroPercents] = useState(() => {
     const p = goals.proteinPct ?? 30;
     const c = goals.carbsPct ?? 40;
@@ -190,8 +191,8 @@ const Dashboard = ({ mealsUpdated }) => {
   };
 
   // --- Advanced Accordions State ---
-  const [showVitamins, setShowVitamins] = useState(false);
-  const [showMinerals, setShowMinerals] = useState(false);
+  const [showVitamins, setShowVitamins] = useState(true);
+  const [showMinerals, setShowMinerals] = useState(true);
   const [vitaminToggles, setVitaminToggles] = useState(() => {
     const g = getDailyGoals();
     return Object.fromEntries(
@@ -370,42 +371,74 @@ const Dashboard = ({ mealsUpdated }) => {
   };
 
   const handleGoalSave = () => {
-    const cleaned = {};
-    for (const k in goalInputs) {
-      if (goalInputs[k] && !isNaN(Number(goalInputs[k])))
-        cleaned[k] = Number(goalInputs[k]);
+    const newGoals = {};
+    const goalsToRemove = [];
+
+    // 1. Handle calorie goal
+    if (calorieGoal && !isNaN(Number(calorieGoal)) && Number(calorieGoal) > 0) {
+      newGoals.calories = Number(calorieGoal);
+    } else {
+      goalsToRemove.push("calories");
     }
-    // Add secondary goals if enabled
+
+    // 2. Save macro percentages
+    newGoals.proteinPct = macroPercents.protein;
+    newGoals.carbsPct = macroPercents.carbs;
+    newGoals.fatPct = macroPercents.fat;
+
+    // 3. Handle secondary goals
     SECONDARY_GOALS.forEach((sg) => {
+      const value = secondaryValues[sg.key];
       if (
         secondaryToggles[sg.key] &&
-        secondaryValues[sg.key] &&
-        !isNaN(Number(secondaryValues[sg.key]))
+        value !== "" &&
+        !isNaN(Number(value)) &&
+        Number(value) > 0
       ) {
-        cleaned[sg.key] = Number(secondaryValues[sg.key]);
+        newGoals[sg.key] = Number(value);
+      } else {
+        goalsToRemove.push(sg.key);
       }
     });
-    // Add advanced goals if enabled
+
+    // 4. Handle vitamin goals
     VITAMINS.forEach((v) => {
+      const value = vitaminValues[v.key];
       if (
         vitaminToggles[v.key] &&
-        vitaminValues[v.key] &&
-        !isNaN(Number(vitaminValues[v.key]))
+        value !== "" &&
+        !isNaN(Number(value)) &&
+        Number(value) > 0
       ) {
-        cleaned[v.key] = Number(vitaminValues[v.key]);
+        newGoals[v.key] = Number(value);
+      } else {
+        goalsToRemove.push(v.key);
       }
     });
+
+    // 5. Handle mineral goals
     MINERALS.forEach((m) => {
+      const value = mineralValues[m.key];
       if (
         mineralToggles[m.key] &&
-        mineralValues[m.key] &&
-        !isNaN(Number(mineralValues[m.key]))
+        value !== "" &&
+        !isNaN(Number(value)) &&
+        Number(value) > 0
       ) {
-        cleaned[m.key] = Number(mineralValues[m.key]);
+        newGoals[m.key] = Number(value);
+      } else {
+        goalsToRemove.push(m.key);
       }
     });
-    setDailyGoals(cleaned);
-    setGoals(cleaned);
+
+    // Save to storage
+    setDailyGoals(newGoals);
+    goalsToRemove.forEach((key) => removeDailyGoal(key));
+
+    // Update component state
+    setGoals(getDailyGoals());
+
+    // Show confirmation toast
     setShowToast(true);
     if (toastTimeout.current) clearTimeout(toastTimeout.current);
     toastTimeout.current = setTimeout(() => setShowToast(false), 2000);
@@ -614,8 +647,9 @@ const Dashboard = ({ mealsUpdated }) => {
               type="number"
               min="500"
               max="8000"
+              placeholder="e.g., 2000"
               value={calorieGoal}
-              onChange={(e) => setCalorieGoal(Number(e.target.value) || 0)}
+              onChange={(e) => setCalorieGoal(e.target.value)}
               className="calorie-goal-input"
             />
             <span className="calorie-goal-unit">kcal</span>
@@ -669,22 +703,28 @@ const Dashboard = ({ mealsUpdated }) => {
                       className="macro-slider"
                     />
                     <span className="macro-percent">{macroPercents[k]}%</span>
-                    <span className="macro-grams">{macroGrams[k]}g</span>
-                    <div className="goal-progress">
-                      <div className="progress-bar-bg">
-                        <div
-                          className="progress-bar-fill"
-                          style={{
-                            width: percent + "%",
-                            background: reached ? "#27ae60" : "#b7e4c7",
-                          }}
-                        />
+                    <span className="macro-grams">
+                      {goal ? `${goal}g` : "-"}
+                    </span>
+                    {goal && (
+                      <div className="goal-progress">
+                        <div className="progress-bar-bg">
+                          <div
+                            className="progress-bar-fill"
+                            style={{
+                              width: percent + "%",
+                              background: reached ? "#27ae60" : "#b7e4c7",
+                            }}
+                          />
+                        </div>
+                        <span className="goal-status">
+                          {Math.round(today)} / {goal}g{" "}
+                          {reached
+                            ? "(Goal reached!)"
+                            : `(${Math.round(remaining)} left)`}
+                        </span>
                       </div>
-                      <span className="goal-status">
-                        {today} / {goal}g{" "}
-                        {reached ? "(Goal reached!)" : `(${remaining} left)`}
-                      </span>
-                    </div>
+                    )}
                   </div>
                 );
               })}
@@ -748,9 +788,11 @@ const Dashboard = ({ mealsUpdated }) => {
                           />
                         </div>
                         <span className="goal-status">
-                          {today} / {goal}
+                          {Math.round(today)} / {goal}
                           {sg.unit}{" "}
-                          {reached ? "(Goal reached!)" : `(${remaining} left)`}
+                          {reached
+                            ? "(Goal reached!)"
+                            : `(${Math.round(remaining)} left)`}
                         </span>
                       </div>
                     );
@@ -833,11 +875,11 @@ const Dashboard = ({ mealsUpdated }) => {
                                   />
                                 </div>
                                 <span className="goal-status">
-                                  {today} / {goal}
+                                  {Math.round(today)} / {goal}
                                   {v.unit}{" "}
                                   {reached
                                     ? "(Goal reached!)"
-                                    : `(${remaining} left)`}
+                                    : `(${Math.round(remaining)} left)`}
                                 </span>
                               </div>
                             );
@@ -919,11 +961,11 @@ const Dashboard = ({ mealsUpdated }) => {
                                   />
                                 </div>
                                 <span className="goal-status">
-                                  {today} / {goal}
+                                  {Math.round(today)} / {goal}
                                   {m.unit}{" "}
                                   {reached
                                     ? "(Goal reached!)"
-                                    : `(${remaining} left)`}
+                                    : `(${Math.round(remaining)} left)`}
                                 </span>
                               </div>
                             );
