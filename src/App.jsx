@@ -37,8 +37,24 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <header className="App-header" style={{ position: "relative" }}>
-          <h1>NutriSnap</h1>
-          <p>AI-Powered Meal Journal</p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "1rem",
+            }}
+          >
+            <img
+              src="/logo.png"
+              alt="NutriSnap Logo"
+              style={{ height: "50px", borderRadius: "12px" }}
+            />
+            <div style={{ textAlign: "left" }}>
+              <h1>NutriSnap</h1>
+              <p>AI-Powered Meal Journal</p>
+            </div>
+          </div>
           <button
             className={`theme-switcher${theme === "dark" ? " dark" : ""}`}
             onClick={toggleTheme}
