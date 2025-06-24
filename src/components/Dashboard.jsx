@@ -491,7 +491,6 @@ const Dashboard = ({ mealsUpdated }) => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h2>Your Nutrition Dashboard</h2>
         <div className="header-content">
           <div className="header-left">
             <div
