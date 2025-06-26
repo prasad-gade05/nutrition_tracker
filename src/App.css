@@ -98,43 +98,38 @@ h3 {
 .entry-tabs {
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: var(--surface-color);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-color);
-  margin: 24px auto 32px auto;
-  width: fit-content;
-  padding: 4px;
-  gap: 0;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .tab-button {
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-color-primary);
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 12px 32px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  margin: 0 2px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
 }
 
 .tab-button.active {
-  background: var(--surface-color);
-  color: var(--primary-color);
-  box-shadow: 0px 2px 8px rgba(44, 62, 80, 0.08);
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button:not(.active) {
+  background-color: var(--surface-color);
+  color: var(--text-color-primary);
+  border: 1px solid var(--border-color);
 }
 
 .tab-button:not(.active):hover {
-  background: var(--background-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .manual-entry-form,

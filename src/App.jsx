@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { FaSun, FaMoon, FaPencilAlt, FaCamera } from "react-icons/fa";
 import ManualEntryForm from "./components/ManualEntryForm";
 import ImageEntry from "./components/ImageEntry";
 import Dashboard from "./components/Dashboard";
@@ -105,7 +105,7 @@ function App() {
                       }`}
                       onClick={() => setActiveTab("manual")}
                     >
-                      ✏️ Manual Entry
+                      <FaPencilAlt /> Manual Entry
                     </button>
                     <button
                       className={`tab-button ${
@@ -113,7 +113,7 @@ function App() {
                       }`}
                       onClick={() => setActiveTab("image")}
                     >
-                      📷 Snap a Meal
+                      <FaCamera /> Snap a Meal
                     </button>
                   </div>
 
