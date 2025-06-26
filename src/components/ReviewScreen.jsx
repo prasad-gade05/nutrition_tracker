@@ -73,14 +73,22 @@ const ReviewScreen = ({
         {items.length > 0 && (
           <div className="items-breakdown-section">
             <strong>Identified Items:</strong>
-            <ul>
+            <div className="items-breakdown-grid">
+              <div className="items-header-row">
+                <span className="item-header">Name</span>
+                <span className="item-header">Quantity</span>
+                <span className="item-header">Estimated Weight</span>
+              </div>
               {items.map((item, idx) => (
-                <li key={idx}>
-                  {item.quantity ? `${item.quantity} ` : ""}
-                  {item.name}
-                </li>
+                <div key={idx} className="item-detail-row">
+                  <span className="item-value">{item.name || "-"}</span>
+                  <span className="item-value">{item.quantity || "-"}</span>
+                  <span className="item-value">
+                    {item.estimatedWeight || "-"}
+                  </span>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
@@ -247,6 +255,47 @@ const ReviewScreen = ({
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        .items-breakdown-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 0;
+          margin-top: 8px;
+          width: 100%;
+          max-width: 520px;
+        }
+        .items-header-row {
+          display: grid;
+          grid-template-columns: 2.2fr 1.5fr 1.7fr;
+          font-size: 0.97rem;
+          color: #64748b;
+          font-weight: 600;
+          margin-bottom: 2px;
+          padding-bottom: 2px;
+          border-bottom: 1px solid #e2e8f0;
+        }
+        .item-detail-row {
+          display: grid;
+          grid-template-columns: 2.2fr 1.5fr 1.7fr;
+          font-size: 1.01rem;
+          color: #222;
+          font-weight: 400;
+          padding: 2px 0;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .item-header {
+          padding-right: 8px;
+          font-weight: 600;
+          color: #475569;
+        }
+        .item-value {
+          padding-right: 8px;
+          color: #222;
+          font-weight: 400;
+          word-break: break-word;
+        }
+      `}</style>
     </div>
   );
 };

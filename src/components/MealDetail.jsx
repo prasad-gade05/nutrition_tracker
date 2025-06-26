@@ -65,6 +65,34 @@ const MealDetail = ({ mealId, onClose, onMealDeleted }) => {
                   Quantity: {meal.geminiAnalysis.quantity}
                 </div>
               )}
+              {/* Items breakdown section */}
+              {Array.isArray(meal.geminiAnalysis?.items) &&
+                meal.geminiAnalysis.items.length > 0 && (
+                  <div
+                    className="items-breakdown-section"
+                    style={{ marginTop: 8, marginBottom: 8 }}
+                  >
+                    <strong>Identified Items:</strong>
+                    <table className="items-breakdown-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Quantity</th>
+                          <th>Estimated Weight</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {meal.geminiAnalysis.items.map((item, idx) => (
+                          <tr key={idx}>
+                            <td>{item.name || "-"}</td>
+                            <td>{item.quantity || "-"}</td>
+                            <td>{item.estimatedWeight || "-"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               <div className="meal-meta">
                 <span className="meal-type-badge">
                   {meal.type === "image"
@@ -236,3 +264,29 @@ const MealDetail = ({ mealId, onClose, onMealDeleted }) => {
 };
 
 export default MealDetail;
+
+<style jsx>{`
+  .items-breakdown-table {
+    width: 100%;
+    max-width: 520px;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+  .items-breakdown-table th,
+  .items-breakdown-table td {
+    text-align: left;
+    padding: 4px 8px;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 400;
+  }
+  .items-breakdown-table th {
+    color: #475569;
+    font-weight: 600;
+    background: #f8fafc;
+    font-size: 0.97rem;
+  }
+  .items-breakdown-table tr:last-child td {
+    border-bottom: none;
+  }
+`}</style>;

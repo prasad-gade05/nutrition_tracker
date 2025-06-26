@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { format, parse } from "date-fns";
+import Papa from "papaparse";
 
 const STORAGE_KEY = "nutrisnap_meals";
 const GOALS_KEY = "nutrisnap_daily_goals";
@@ -90,6 +91,7 @@ export function exportMealsToCSV() {
     "calcium (mg)",
     "potassium (mg)",
     "magnesium (mg)",
+    "items (json)",
   ].join(",");
 
   // Format each meal into a CSV row
@@ -98,6 +100,7 @@ export function exportMealsToCSV() {
     const nutrition = meal.geminiAnalysis?.nutrition || {};
     const vitamins = nutrition.vitamins || {};
     const minerals = nutrition.minerals || {};
+    const itemsJson = JSON.stringify(meal.geminiAnalysis?.items || []);
 
     return [
       meal.id,
@@ -127,6 +130,7 @@ export function exportMealsToCSV() {
       minerals.calcium?.value || "",
       minerals.potassium?.value || "",
       minerals.magnesium?.value || "",
+      `"${itemsJson.replace(/"/g, '""')}"`,
     ].join(",");
   });
 
@@ -154,11 +158,18 @@ export function downloadMealsCSV() {
 }
 
 export function parseCSVData(csvContent) {
-  const lines = csvContent
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line);
-  const headers = lines[0].split(",");
+  // Use PapaParse for robust CSV parsing
+  const parsed = Papa.parse(csvContent, {
+    header: true,
+    skipEmptyLines: true,
+    dynamicTyping: false,
+  });
+  if (parsed.errors && parsed.errors.length > 0) {
+    console.error("[CSV Import] PapaParse errors:", parsed.errors);
+    throw new Error("CSV parsing error: " + parsed.errors[0].message);
+  }
+  const rows = parsed.data;
+  const headers = parsed.meta.fields;
   const expectedHeaders = [
     "id",
     "date",
@@ -183,87 +194,151 @@ export function parseCSVData(csvContent) {
     "calcium (mg)",
     "potassium (mg)",
     "magnesium (mg)",
+    "items (json)",
   ];
 
-  // Validate headers
-  if (
-    headers.length !== expectedHeaders.length ||
-    !expectedHeaders.every((header, index) => headers[index] === header)
-  ) {
+  console.log("[CSV Import] Headers:", headers);
+  // Allow both old and new CSVs (with or without items column)
+  const isNewFormat =
+    headers.length === expectedHeaders.length &&
+    headers[headers.length - 1] === "items (json)";
+  const isOldFormat = headers.length === expectedHeaders.length - 1;
+  console.log(
+    "[CSV Import] Detected format:",
+    isNewFormat ? "new" : isOldFormat ? "old" : "invalid"
+  );
+  if (!isNewFormat && !isOldFormat) {
+    console.error(
+      "[CSV Import] Invalid CSV format: Headers do not match expected format"
+    );
     throw new Error("Invalid CSV format: Headers do not match expected format");
   }
 
   const meals = [];
-  for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(",").map((value) => value.trim());
-    if (values.length !== headers.length) continue;
-
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
     try {
       // Parse date and time
-      const dateStr = values[1];
-      const timeStr = values[2].replace(".", ":"); // Convert decimal point to colon
+      const dateStr = row["date"];
+      const timeStr = row["time"]?.replace(".", ":"); // Convert decimal point to colon
       const parsedDate = parse(
         `${dateStr} ${timeStr}`,
         "yyyy-MM-dd hh:mm a",
         new Date()
       );
       if (isNaN(parsedDate.getTime())) {
-        console.warn(`Skipping row ${i + 1}: Invalid date/time format`);
+        console.warn(
+          `[CSV Import] Skipping row ${i + 2}: Invalid date/time format`
+        );
         continue;
       }
 
       // Clean string values (remove quotes)
-      const foodName = values[4].replace(/^"|"$/g, "").replace(/""/g, '"');
-      const quantity = values[5].replace(/^"|"$/g, "").replace(/""/g, '"');
+      const foodName = (row["foodName"] || "")
+        .replace(/^"|"$/g, "")
+        .replace(/""/g, '"');
+      const quantity = (row["quantity"] || "")
+        .replace(/^"|"$/g, "")
+        .replace(/""/g, '"');
+
+      // Handle items (json) column if present
+      let items = [];
+      if (isNewFormat) {
+        const itemsJson = row["items (json)"] || "[]";
+        try {
+          items = JSON.parse(itemsJson.replace(/""/g, '"'));
+          if (!Array.isArray(items)) items = [];
+        } catch (err) {
+          console.warn(
+            `[CSV Import] Failed to parse items JSON in row ${i + 2}:`,
+            err
+          );
+          items = [];
+        }
+      }
 
       const meal = {
-        id: values[0] || uuidv4(), // Use provided ID or generate new one
+        id: row["id"] || uuidv4(), // Use provided ID or generate new one
         timestamp: parsedDate.getTime(), // Convert to timestamp
-        type: values[3],
+        type: row["type"],
         userInput: {
           quantity,
           text: foodName,
         },
         geminiAnalysis: {
           foodName,
+          items, // <-- add items array (empty for old CSVs)
           nutrition: {
-            calories: { value: parseFloat(values[6]) || 0 },
-            protein: { value: parseFloat(values[7]) || 0 },
-            carbs: { value: parseFloat(values[8]) || 0 },
-            fiber: { value: parseFloat(values[9]) || 0 },
-            sugar: { value: parseFloat(values[10]) || 0 },
-            fat: { value: parseFloat(values[11]) || 0 },
-            saturatedFat: { value: parseFloat(values[12]) || 0 },
+            calories: { value: parseFloat(row["calories (kcal)"]) || 0 },
+            protein: { value: parseFloat(row["protein (g)"]) || 0 },
+            carbs: { value: parseFloat(row["carbohydrates_total (g)"]) || 0 },
+            fiber: { value: parseFloat(row["carbohydrates_fiber (g)"]) || 0 },
+            sugar: { value: parseFloat(row["carbohydrates_sugar (g)"]) || 0 },
+            fat: { value: parseFloat(row["fat_total (g)"]) || 0 },
+            saturatedFat: { value: parseFloat(row["fat_saturated (g)"]) || 0 },
             vitamins: {
-              vitaminA: { value: parseFloat(values[13]) || 0, unit: "mcg" },
-              vitaminC: { value: parseFloat(values[14]) || 0, unit: "mg" },
-              vitaminD: { value: parseFloat(values[15]) || 0, unit: "mcg" },
-              vitaminB6: { value: parseFloat(values[16]) || 0, unit: "mg" },
-              vitaminB12: { value: parseFloat(values[17]) || 0, unit: "mcg" },
+              vitaminA: {
+                value: parseFloat(row["vitamin_a (mcg)"]) || 0,
+                unit: "mcg",
+              },
+              vitaminC: {
+                value: parseFloat(row["vitamin_c (mg)"]) || 0,
+                unit: "mg",
+              },
+              vitaminD: {
+                value: parseFloat(row["vitamin_d (mcg)"]) || 0,
+                unit: "mcg",
+              },
+              vitaminB6: {
+                value: parseFloat(row["vitamin_b6 (mg)"]) || 0,
+                unit: "mg",
+              },
+              vitaminB12: {
+                value: parseFloat(row["vitamin_b12 (mcg)"]) || 0,
+                unit: "mcg",
+              },
             },
             minerals: {
-              sodium: { value: parseFloat(values[18]) || 0, unit: "mg" },
-              iron: { value: parseFloat(values[19]) || 0, unit: "mg" },
-              calcium: { value: parseFloat(values[20]) || 0, unit: "mg" },
-              potassium: { value: parseFloat(values[21]) || 0, unit: "mg" },
-              magnesium: { value: parseFloat(values[22]) || 0, unit: "mg" },
+              sodium: {
+                value: parseFloat(row["sodium (mg)"]) || 0,
+                unit: "mg",
+              },
+              iron: { value: parseFloat(row["iron (mg)"]) || 0, unit: "mg" },
+              calcium: {
+                value: parseFloat(row["calcium (mg)"]) || 0,
+                unit: "mg",
+              },
+              potassium: {
+                value: parseFloat(row["potassium (mg)"]) || 0,
+                unit: "mg",
+              },
+              magnesium: {
+                value: parseFloat(row["magnesium (mg)"]) || 0,
+                unit: "mg",
+              },
             },
           },
         },
       };
+      console.log(`[CSV Import] Parsed meal row ${i + 2}:`, meal);
       meals.push(meal);
     } catch (error) {
-      console.warn(`Error parsing row ${i + 1}:`, error);
+      console.warn(`[CSV Import] Error parsing row ${i + 2}:`, error);
       continue;
     }
   }
+  console.log(`[CSV Import] Total meals parsed: ${meals.length}`);
   return meals;
 }
 
 export function importMealsFromCSV(csvContent) {
   try {
+    console.log("[CSV Import] Starting import...");
     const meals = parseCSVData(csvContent);
     const existingMeals = getAllMeals();
+    console.log(
+      `[CSV Import] Existing meals in storage: ${existingMeals.length}`
+    );
 
     // Create a map of existing meal IDs
     const existingIds = new Set(existingMeals.map((meal) => meal.id));
@@ -271,6 +346,9 @@ export function importMealsFromCSV(csvContent) {
     // Filter out meals that already exist and generate new IDs for duplicates
     const newMeals = meals.map((meal) => {
       if (existingIds.has(meal.id)) {
+        console.log(
+          `[CSV Import] Duplicate meal ID found, generating new ID: ${meal.id}`
+        );
         return { ...meal, id: uuidv4() };
       }
       return meal;
@@ -279,6 +357,7 @@ export function importMealsFromCSV(csvContent) {
     // Save all meals
     const updatedMeals = [...existingMeals, ...newMeals];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMeals));
+    console.log(`[CSV Import] Meals after import: ${updatedMeals.length}`);
 
     // Dispatch storage event to notify other tabs
     window.dispatchEvent(new Event("storage"));
@@ -289,7 +368,7 @@ export function importMealsFromCSV(csvContent) {
       total: updatedMeals.length,
     };
   } catch (error) {
-    console.error("Error importing meals:", error);
+    console.error("[CSV Import] Error importing meals:", error);
     return {
       success: false,
       error: error.message,

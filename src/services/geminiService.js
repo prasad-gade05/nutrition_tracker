@@ -10,13 +10,18 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MO
 
 // --- DETAILED PROMPT TEMPLATES ---
 
+// *** CHANGED: Updated the 'items' array structure to include 'estimatedWeight' ***
 const NUTRITION_JSON_STRUCTURE = `
 {
   "foodName": "A descriptive name of the meal",
   "items": [
-    { "name": "Name of food item", "quantity": "Estimated quantity (e.g., 3 pieces, 2 bowls)" }
+    { 
+      "name": "Name of food item", 
+      "quantity": "Estimated quantity in common units (e.g., '1 bowl', '3 pieces')",
+      "estimatedWeight": "Estimated weight or volume in standard units (e.g., '200 g', '150 ml')" 
+    }
   ],
-  "quantity": "The estimated total quantity or serving size",
+  "quantity": "The estimated total quantity or serving size of the entire meal",
   "nutrition": {
     "calories": { "value": Number, "unit": "kcal" },
     "macronutrients": {
@@ -50,6 +55,7 @@ const NUTRITION_JSON_STRUCTURE = `
   }
 }`;
 
+// *** CHANGED: Updated the Example Response to include the new 'items' structure ***
 const TEXT_PROMPT_TEMPLATE = `
 You are a world-class nutritional analysis AI. Your task is to analyze the following food description and provide a detailed, structured nutritional breakdown.
 
@@ -68,6 +74,11 @@ Estimated Quantity: '1 serving, approx 300g'
 **Example Response:**
 {
   "foodName": "Oatmeal with Blueberries and Almonds",
+  "items": [
+    { "name": "Cooked Oatmeal", "quantity": "1 large bowl", "estimatedWeight": "250 g" },
+    { "name": "Blueberries", "quantity": "a handful", "estimatedWeight": "30 g" },
+    { "name": "Almonds", "quantity": "a handful", "estimatedWeight": "20 g" }
+  ],
   "quantity": "1 serving, approx 300g",
   "nutrition": {
     "calories": { "value": 350, "unit": "kcal" },
@@ -84,6 +95,7 @@ Estimated Quantity: '1 serving, approx 300g'
 { "error": "Unrecognizable food item. Please provide a more detailed description." }
 `;
 
+// *** CHANGED: Updated the instructions for the 'items' array to be more specific ***
 const IMAGE_PROMPT_TEMPLATE = `
 You are a world-class nutritional analysis AI with expert vision capabilities. Your task is to identify all food items in the provided image, estimate their portion sizes, and provide a single, consolidated nutritional breakdown for the entire meal.
 
@@ -92,7 +104,10 @@ Your response MUST be a single, valid JSON object and nothing else. Do not wrap 
 The JSON object must strictly follow this structure:
 ${NUTRITION_JSON_STRUCTURE}
 
-**Important:** The 'items' array must list each visible food item with its estimated quantity (e.g., 3 leg pieces, 2 breasts, 1 bowl of rice). This is for review only and should not affect the nutrition calculation.
+**Important:** The 'items' array must list each visible food item. For each item, you MUST provide:
+1. 'quantity': The estimated quantity in common household units (e.g., '3 pieces', '1 bowl').
+2. 'estimatedWeight': The estimated weight or volume in standard metric units (e.g., '200 g', '150 ml').
+This detailed breakdown is for user review and is crucial for accuracy.
 
 **Important:** If the image does not contain identifiable food, return this exact JSON object:
 { "error": "No identifiable food found in the image. Please use a clearer photo." }
@@ -166,7 +181,9 @@ const parseJsonFromText = (text) => {
  */
 const normalizeNutritionData = (data) => {
   console.log("🔄 Normalizing nutrition data:", data);
-
+  
+  // NOTE: No change is needed here. As long as the API returns the 'items' array
+  // in the new format, this will pass it through correctly.
   let normalized = {
     foodName: data.foodName || "Unknown Food",
     quantity: data.quantity || "1 serving",
@@ -176,8 +193,8 @@ const normalizeNutritionData = (data) => {
       protein: { value: 0, unit: "g" },
       carbs: { value: 0, unit: "g" },
       fat: { value: 0, unit: "g" },
-      fiber: { value: 0, unit: "g" },
-      sugar: { value: 0, unit: "g" },
+      fiber: { value: 0, "unit": "g" },
+      sugar: { value: 0, "unit": "g" },
       vitamins: {},
       minerals: {},
     },
@@ -208,37 +225,37 @@ const normalizeNutritionData = (data) => {
       if (micros.vitamins) normalized.nutrition.vitamins = micros.vitamins;
       if (micros.minerals) normalized.nutrition.minerals = micros.minerals;
     }
-
+    
     // Handle legacy structure (direct properties)
     if (nutrition.protein && !normalized.nutrition.protein.value) {
       normalized.nutrition.protein =
-        typeof nutrition.protein === "object"
+        typeof nutrition.protein === 'object'
           ? nutrition.protein
-          : { value: nutrition.protein, unit: "g" };
+          : { value: nutrition.protein, unit: 'g' };
     }
     if (nutrition.carbs && !normalized.nutrition.carbs.value) {
       normalized.nutrition.carbs =
-        typeof nutrition.carbs === "object"
+        typeof nutrition.carbs === 'object'
           ? nutrition.carbs
-          : { value: nutrition.carbs, unit: "g" };
+          : { value: nutrition.carbs, unit: 'g' };
     }
     if (nutrition.fat && !normalized.nutrition.fat.value) {
       normalized.nutrition.fat =
-        typeof nutrition.fat === "object"
+        typeof nutrition.fat === 'object'
           ? nutrition.fat
-          : { value: nutrition.fat, unit: "g" };
+          : { value: nutrition.fat, unit: 'g' };
     }
     if (nutrition.fiber && !normalized.nutrition.fiber.value) {
       normalized.nutrition.fiber =
-        typeof nutrition.fiber === "object"
+        typeof nutrition.fiber === 'object'
           ? nutrition.fiber
-          : { value: nutrition.fiber, unit: "g" };
+          : { value: nutrition.fiber, unit: 'g' };
     }
     if (nutrition.sugar && !normalized.nutrition.sugar.value) {
       normalized.nutrition.sugar =
-        typeof nutrition.sugar === "object"
+        typeof nutrition.sugar === 'object'
           ? nutrition.sugar
-          : { value: nutrition.sugar, unit: "g" };
+          : { value: nutrition.sugar, unit: 'g' };
     }
 
     // Handle vitamins and minerals (legacy structure)
@@ -258,6 +275,7 @@ const normalizeNutritionData = (data) => {
   console.log("✅ Normalized nutrition data:", normalized);
   return normalized;
 };
+
 
 /**
  * Gets nutritional data from a text description using the Gemini API.
@@ -287,8 +305,6 @@ export const getNutritionFromText = async (description, quantity) => {
 
     const data = await response.json();
     const responseText = data.candidates[0].content.parts[0].text;
-
-    // **CHANGE:** We now only need to call our single, robust parsing function.
     const nutritionData = parseJsonFromText(responseText);
 
     return { ...nutritionData, rawResponse: responseText };
@@ -333,8 +349,6 @@ export const getNutritionFromImage = async (base64Image) => {
 
     const data = await response.json();
     const responseText = data.candidates[0].content.parts[0].text;
-
-    // **CHANGE:** We now only need to call our single, robust parsing function.
     const nutritionData = parseJsonFromText(responseText);
 
     return { ...nutritionData, rawResponse: responseText };
@@ -386,7 +400,6 @@ export const getNutritionFromImageWithSuggestion = async (
 
     const data = await response.json();
     const responseText = data.candidates[0].content.parts[0].text;
-
     const nutritionData = parseJsonFromText(responseText);
 
     return { ...nutritionData, rawResponse: responseText };
