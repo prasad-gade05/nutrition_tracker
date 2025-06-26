@@ -6,6 +6,7 @@ import {
   getNutritionFromImageWithSuggestion,
 } from "../services/geminiService";
 import ReviewScreen from "./ReviewScreen";
+import { FaCamera, FaImage } from "react-icons/fa";
 
 const ImageEntry = ({ onNutritionReceived, onMealSaved, theme }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -170,7 +171,7 @@ const ImageEntry = ({ onNutritionReceived, onMealSaved, theme }) => {
           disabled={isLoading}
           className="photo-btn"
         >
-          📷 Take Photo
+          <FaCamera /> Take Photo
         </button>
 
         <button
@@ -179,7 +180,7 @@ const ImageEntry = ({ onNutritionReceived, onMealSaved, theme }) => {
           disabled={isLoading}
           className="gallery-btn"
         >
-          🖼️ Select from Gallery
+          <FaImage /> Select from Gallery
         </button>
       </div>
 

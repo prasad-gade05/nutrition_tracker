@@ -94,11 +94,7 @@ const MealDetail = ({ mealId, onClose, onMealDeleted }) => {
                   </div>
                 )}
               <div className="meal-meta">
-                <span className="meal-type-badge">
-                  {meal.type === "image"
-                    ? "📷 Image Analysis"
-                    : "✏️ Manual Entry"}
-                </span>
+                <span className="meal-type-badge"></span>
                 <span className="meal-time">
                   {format(
                     new Date(meal.timestamp),

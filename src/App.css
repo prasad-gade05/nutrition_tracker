@@ -105,6 +105,7 @@ h3 {
 .tab-button {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -523,7 +524,7 @@ h3 {
 
 .meal-detail-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 25px;
 }
@@ -968,31 +969,47 @@ button:disabled {
 
 .image-options {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .photo-btn,
 .gallery-btn {
   flex: 1;
-  padding: 15px;
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
 }
 
 .photo-btn {
-  background-color: var(--primary-color);
+  background-color: var(--primary-accent);
+  color: white;
 }
 
-.photo-btn:hover:not(:disabled) {
-  background-color: var(--primary-accent);
+.photo-btn:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .gallery-btn {
-  background-color: #9b59b6;
+  background-color: var(--surface-color);
+  color: var(--text-color-primary);
+  border: 1px solid var(--border-color);
 }
 
-.gallery-btn:hover:not(:disabled) {
-  background-color: #8e44ad;
+.gallery-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
 }
 
 .image-preview {
