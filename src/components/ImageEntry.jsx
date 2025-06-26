@@ -7,7 +7,7 @@ import {
 } from "../services/geminiService";
 import ReviewScreen from "./ReviewScreen";
 
-const ImageEntry = ({ onNutritionReceived, onMealSaved }) => {
+const ImageEntry = ({ onNutritionReceived, onMealSaved, theme }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
@@ -154,6 +154,7 @@ const ImageEntry = ({ onNutritionReceived, onMealSaved }) => {
         onConfirm={handleReviewConfirm}
         onCancel={handleReviewCancel}
         onRecheck={handleRecheckWithSuggestion}
+        theme={theme}
       />
     );
   }

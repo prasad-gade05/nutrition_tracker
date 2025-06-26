@@ -3,7 +3,7 @@ import { useState } from "react";
 import { getNutritionFromText } from "../services/geminiService";
 import ReviewScreen from "./ReviewScreen";
 
-const ManualEntryForm = ({ onNutritionReceived, onMealSaved }) => {
+const ManualEntryForm = ({ onNutritionReceived, onMealSaved, theme }) => {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +64,7 @@ const ManualEntryForm = ({ onNutritionReceived, onMealSaved }) => {
         }}
         onConfirm={handleReviewConfirm}
         onCancel={handleReviewCancel}
+        theme={theme}
       />
     );
   }

@@ -121,11 +121,13 @@ function App() {
                     <ManualEntryForm
                       onNutritionReceived={handleNutritionReceived}
                       onMealSaved={handleMealSaved}
+                      theme={theme}
                     />
                   ) : (
                     <ImageEntry
                       onNutritionReceived={handleNutritionReceived}
                       onMealSaved={handleMealSaved}
+                      theme={theme}
                     />
                   )}
 

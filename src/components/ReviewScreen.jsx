@@ -9,6 +9,7 @@ const ReviewScreen = ({
   onConfirm,
   onCancel,
   onRecheck,
+  theme,
 }) => {
   const [editedFoodName, setEditedFoodName] = useState(
     nutritionData?.foodName || ""
@@ -279,7 +280,7 @@ const ReviewScreen = ({
           display: grid;
           grid-template-columns: 2.2fr 1.5fr 1.7fr;
           font-size: 1.01rem;
-          color: #222;
+          color: ${theme === "dark" ? "#fff" : "#222"};
           font-weight: 400;
           padding: 2px 0;
           border-bottom: 1px solid #f1f5f9;
@@ -291,7 +292,7 @@ const ReviewScreen = ({
         }
         .item-value {
           padding-right: 8px;
-          color: #222;
+          color: ${theme === "dark" ? "#fff" : "#222"};
           font-weight: 400;
           word-break: break-word;
         }
