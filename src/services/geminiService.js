@@ -3,9 +3,9 @@
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 // Use the latest, fast, and powerful multimodal model.
-// 'gemini-1.5-flash-latest' is fast and cost-effective.
+// 'gemini-2.5-flash' is the latest fast and cost-effective model.
 // 'gemini-1.5-pro-latest' is higher quality but slower/more expensive.
-const MODEL_NAME = "gemini-1.5-flash-latest";
+const MODEL_NAME = "gemini-2.5-flash";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
 
 // --- DETAILED PROMPT TEMPLATES ---
