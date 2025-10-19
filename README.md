@@ -46,7 +46,7 @@ A simple, private, and intelligent application for tracking your daily nutrition
 4. Configure your Gemini API key:
 
    - Open `src/services/geminiService.js`
-   - Replace `'YOUR_GEMINI_API_KEY'` with your actual API key
+   - Replace `'VITE_GEMINI_API_KEY'` with your actual API key
    - Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
 
 5. Start the development server:
@@ -164,21 +164,3 @@ src/
 ├── App.css              # Main styles
 └── main.js              # App entry point
 ```
-
-### Key Features Implemented
-
-1. **Milestone 1**: Core AI Logic & Manual Entry
-2. **Milestone 2**: Data Storage & Persistence
-3. **Milestone 3**: Image-Based Meal Analysis
-4. **Milestone 4**: Review & Confirmation Screen
-5. **Milestone 5**: Dashboard & UI Polish
-6. **Milestone 6**: Meal Detail View & Management
-7. **Milestone 7**: Final Polish & Responsive Design
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Support
-
-For issues or questions, please check the troubleshooting section above or create an issue in the project repository.
