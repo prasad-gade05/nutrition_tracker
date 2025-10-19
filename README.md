@@ -1,4 +1,4 @@
-# NutriSnap: AI-Powered Meal Journal [Demo](https://prasadsnutritiontracker.netlify.app/)
+# NutriSnap: AI-Powered Meal Journal - [Demo](https://prasadsnutritiontracker.netlify.app/)
 
 A simple, private, and intelligent application for tracking your daily nutritional intake. NutriSnap uses the Google Gemini API to analyze your meals from either an image or a text description, providing a detailed nutritional breakdown without the need for manual database lookups.
 
