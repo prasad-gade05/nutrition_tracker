@@ -4,13 +4,13 @@ A simple, private, and intelligent application for tracking your daily nutrition
 
 ## Features
 
-- **📷 Image Analysis**: Take a photo of your meal and get instant nutritional analysis
-- **✏️ Manual Entry**: Describe your food and get detailed nutritional information
-- **📊 Daily Dashboard**: View your daily nutrition summary and meal history
-- **📱 Mobile-Friendly**: Responsive design that works on desktop and mobile
-- **🔒 Privacy-First**: All data stored locally on your device
-- **📅 Date Navigation**: Browse your meal history by date
-- **🗑️ Meal Management**: View detailed meal information and delete entries
+- **Image Analysis**: Take a photo of your meal and get instant nutritional analysis
+- **Manual Entry**: Describe your food and get detailed nutritional information
+- **Daily Dashboard**: View your daily nutrition summary and meal history
+- **Mobile-Friendly**: Responsive design that works on desktop and mobile
+- **Privacy-First**: All data stored locally on your device
+- **Date Navigation**: Browse your meal history by date
+- **Meal Management**: View detailed meal information and delete entries
 
 ## Technology Stack
 
@@ -63,7 +63,7 @@ A simple, private, and intelligent application for tracking your daily nutrition
 
 #### Manual Entry
 
-1. Click on the "✏️ Manual Entry" tab
+1. Click on the "Manual Entry" tab
 2. Enter the food name/description (e.g., "Grilled salmon with asparagus")
 3. Enter the quantity/serving size (e.g., "1 serving", "200g", "1 cup")
 4. Click "Get Nutrition"
@@ -73,7 +73,7 @@ A simple, private, and intelligent application for tracking your daily nutrition
 
 #### Image Analysis
 
-1. Click on the "📷 Snap a Meal" tab
+1. Click on the "Snap a Meal" tab
 2. Choose "Take Photo" to use your camera or "Select from Gallery" to choose an existing image
 3. Wait for the AI to analyze your image
 4. Review the nutritional data
@@ -92,11 +92,11 @@ A simple, private, and intelligent application for tracking your daily nutrition
 
 All your meal data is stored locally in your browser's Local Storage under the key `nutrisnap_meals`. This means:
 
-- ✅ Your data stays private and on your device
-- ✅ No server dependencies
-- ✅ Works offline
-- ⚠️ Data is tied to your browser/device
-- ⚠️ Clearing browser data will remove your meals
+- Your data stays private and on your device
+- No server dependencies
+- Works offline
+- Data is tied to your browser/device
+- Clearing browser data will remove your meals
 
 ## API Configuration
 
